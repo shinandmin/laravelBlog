@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;  // 사용할 모델 파일 use 처리
+
 use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
@@ -13,7 +14,9 @@ class PostController extends Controller
         //Post 모델의 전체값 출력
         //return response()->json( Post::all());
 
-        $posts = Post::orderBy( 'created_at', 'desc' )->with('comments')->get();
+        $posts = Post::orderBy( 'created_at', 'desc' )
+            ->with(['categories', 'comments'])
+            ->get();
 
         return response()->json( $posts );  // Post 모델의 전체값 출력
     }
@@ -26,6 +29,7 @@ class PostController extends Controller
 //        $subject = $request->input( 'subject' );
 //        $content = $request->input( 'content' );
         $params = $request->only( [ 'subject', 'content' ] );
+        $ids = $request->input( 'category_ids' );
 
 //        // orm 방식으로 insert 하는 방법 1
 //        $post = new Post();     // post 모델의 class화
@@ -42,6 +46,9 @@ class PostController extends Controller
 
         // orm 방식으로 insert 하는 방법 3
         $post = Post::create($params);
+        // 카테고리와 포스트를 연관 지어준다
+        // attach, detach, sync
+        $post->categories()->sync($ids);
 
         return response()->json( $post );
     }
@@ -56,6 +63,7 @@ class PostController extends Controller
     public function update( Request $request, $id ) {
         // id값으로 post 가져오기
         $post = Post::find( $id );
+        $ids = $request->input( 'category_ids' );
 
         // id 값에 해당하는 $post가 없는 경우 예외 처리
         if ( !$post ) {
@@ -73,6 +81,7 @@ class PostController extends Controller
 
         // 데이터 저장
         $post->save();
+        $post->categories()->sync($ids);
 
         // 응답
         return response()->json( $post );

@@ -1,7 +1,8 @@
 <?php
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\PostController;
-use \App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CategoryController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,9 @@ Route::post('/posts/{postId}/comments', [CommentController::class, 'create']);
 Route::delete('/posts/{postId}/comments/{id}', [CommentController::class, 'delete']);
 
 // 카테고리
-
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::post('/categories', [CategoryController::class, 'create']);
+Route::put('/categories/{id}', [CategoryController::class, 'update']);
+Route::delete('/categories/{id}', [CategoryController::class, 'delete']);
 
 
