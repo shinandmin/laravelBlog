@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;  // 사용할 모델 파일 use 처리
 use http\Env\Response;
 use Illuminate\Http\Request;
+use App\Http\Requests\PostRequest;
 
 class PostController extends Controller
 {
@@ -12,36 +13,43 @@ class PostController extends Controller
         //Post 모델의 전체값 출력
         //return response()->json( Post::all());
 
-        $posts = Post::orderBy( 'created_at', 'desc' )->get();
+        $posts = Post::orderBy( 'created_at', 'desc' )->with('comments')->get();
+
         return response()->json( $posts );  // Post 모델의 전체값 출력
     }
 
     // 입력 받을때는 request가 무조건 들어간다.
     public function create( Request $request ) {
-        /*
-        // 폼 검증
-        $request->validate([
-            'subject' => 'required',
-            'content' => 'required',
-        ]);
-        */
 
-        $subject = $request->input( 'subject' );
-        $content = $request->input( 'content' );
+        // 상단의 use App\Http\Requests\PostRequest; 를 통해 폼 검증이 진행된다.
 
-        // orm 방식으로 insert 하는 방법
-        $post = new Post();     // post 모델의 class화
-        $post->subject = $subject;
-        $post->content = $content;
-        $post->save();          // 이렇게하면 insert 된다. (저장)
+//        $subject = $request->input( 'subject' );
+//        $content = $request->input( 'content' );
+        $params = $request->only( [ 'subject', 'content' ] );
+
+//        // orm 방식으로 insert 하는 방법 1
+//        $post = new Post();     // post 모델의 class화
+//        $post->subject = $subject;
+//        $post->content = $content;
+//        $post->save();          // 이렇게하면 insert 된다. (저장)
+
+        // orm 방식으로 insert 하는 방법 2
+//        $post = new Post();
+//        Post::create([
+//            'subject' => $subject,
+//            'content' => $content,
+//        ]);
+
+        // orm 방식으로 insert 하는 방법 3
+        $post = Post::create($params);
 
         return response()->json( $post );
     }
 
     public function read( $id ) {
         //$post = Post::where('id', $id)->get();  // 조건에 맞는 전체 데이터
-        //$post = Post::where('id', $id)->first();  // 조건에 맞는 첫 번째 데이터
-        $post = Post::find( $id ); // 조건에 맞는 첫 번째 데이터를 구하는 축약식
+        $post = Post::where('id', $id)->with( 'comments' )->first();  // 조건에 맞는 첫 번째 데이터
+        //$post = Post::find( $id ); // 조건에 맞는 첫 번째 데이터를 구하는 축약식
         return response()->json( $post );
     }
 
@@ -71,6 +79,7 @@ class PostController extends Controller
     }
 
     public function delete ( $id ) {
+        // Post::where( 'id', $id )->delete();
         // id값으로 post 가져오기
         $post = Post::find( $id );
 

@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\PostController;
+use \App\Http\Controllers\CommentController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,5 +35,9 @@ Route::get('/posts/{id}', [PostController::class, 'read']);
 Route::post('/posts/', [PostController::class, 'create']);
 Route::patch('/posts/{id}', [PostController::class, 'update']);
 Route::delete('/posts/{id}', [PostController::class, 'delete']);
+
+// 댓글달기
+Route::post('/posts/{postId}/comments', [CommentController::class, 'create']);
+Route::delete('/posts/{postId}/comments/{id}', [CommentController::class, 'delete']);
 
 
