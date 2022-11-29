@@ -40,4 +40,7 @@ Route::delete('/posts/{id}', [PostController::class, 'delete']);
 Route::post('/posts/{postId}/comments', [CommentController::class, 'create']);
 Route::delete('/posts/{postId}/comments/{id}', [CommentController::class, 'delete']);
 
+// 카테고리
+
+
 
