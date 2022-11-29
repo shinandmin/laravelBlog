@@ -83,7 +83,7 @@ class PostController extends Controller
         $post->save();
         $post->categories()->sync($ids);
 
-        // 응답
+        // 응답 json
         return response()->json( $post );
     }
 
